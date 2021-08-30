@@ -1,0 +1,1102 @@
+<html><head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+
+<link rel="apple-touch-icon-precomposed" href="img/app_icon.jpg">
+<link rel="apple-touch-icon" href="img/app_icon.jpg"/>
+<link rel="apple-touch-startup-image" href="images/splash.png">
+<script src="js/jquery.js"></script>
+<script src="js/amplify.js"></script>
+<script src="js/jquery.noclickdelay.js"></script>
+<script src="js/jquery.transit.min.js"></script>
+<script src="js/jquery.touchwipe.min.js"></script>
+<script src="js/overthrow-detect.js"></script>
+<script src="js/overthrow-polyfill.js"></script>
+<script src="js/overthrow-toss.js"></script>
+<script src="js/overthrow-init.js"></script>
+<script src="js/seat_layouts.js"></script>
+<!-- <script src="js/sha1.js"></script> -->
+<!-- <script src="js/password_cache.js"></script> -->
+<script src="js/sha256.js"></script>
+<script src="js/blacklist.js"></script>
+<script src="js/shifts.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/viva-lib.js"></script>
+<script src="js/moment.min.js"></script>
+<script src="js/html2canvas.min.js"></script>
+<script src="js/es6-promise.auto.js"></script>
+
+
+<link href="css/polaris/polaris.css?t=2" rel="stylesheet">
+<script src="js/icheck.min.js"></script>
+<!--
+<script src="js/fastclick.js"></script>
+-->
+
+<script src="bwip.js"></script>
+<script src="lib/symdesc.js"></script>
+<script src="lib/needyoffset.js"></script>
+<script src="lib/canvas.js"></script>
+
+<link rel="stylesheet" href="css/viva.css" />
+<title>VivaColumbia</title>
+<script>
+$(function() {
+    amplify.store("country_code", "demo");
+    amplify.store("default_currency_symbol", "$");
+    init();
+    $("body").css("display", "block");
+});
+
+</script>
+</head>
+<body style="display:none">
+<div id="body_div">
+    <div id="navbar_div">
+        <table width="100%" height="60">
+            <tr>
+                <td width="25%" align="left">
+                    <div id="navbar_left">
+                    </div>
+                </td>
+                <td width="50%" height="60" align="center">
+                    <img src="images/Vivacolombia.png" style="max-height:60px;max-width:100%">
+                </td>
+                <td width="25%" align="right">
+                    <div id="navbar_right">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="window_main">
+    </div>
+    <div id="toolbar_div">
+    </div>
+</div>
+
+        <!-- <div class="generic_cell" onclick="ui.showHome()">On Board</div> -->
+<div id="air_home_tpl" class="tpl">
+    <div id="air_home" style="height:100%">
+        <div class="generic_cell" onclick="ui.showOnboard()">On Board</div>
+        <div class="generic_cell" onclick="ui.showCheckin()">Check-In</div>
+        <div class="generic_cell" onclick="ui.showGate()">Gate</div>
+        <div class="generic_cell" onclick="ui.showReports()">Reports</div>
+        <div class="generic_cell" onclick="session.logout();session.showLogin()">Log out</div>
+    </div>
+</div>
+<!--
+        <div class="generic_cell" onclick="ui.showCheckin()">Check-In</div>
+        <div class="generic_cell" onclick="ui.showGate()">Gate</div>
+        <div class="generic_cell" onclick="ui.MagTest()">MAGTest</div>
+        <div class="generic_cell" onclick="ui.NFCTest()">NFCTest</div>
+        <div class="generic_cell" onclick="ui.cardTest()">CardTest</div>
+-->
+
+<div id="check_in_home_tpl" class="tpl">
+    <div id="check_in_home" style="height:100%">
+        <div class="generic_cell" onclick="ui.startScanner(true)">Scan Boarding Pass</div>
+        <div class="generic_cell" onclick="ui.showNoScanInit()">No Scan</div>
+    </div>
+</div>
+
+
+<div id="no_scan_init_tpl" class="tpl">
+    <div class="generic_head">Passenger Info</div>
+    <br>
+    <table width="100%">
+        <tr>
+            <td align="center">Passenger name:</td>
+        </tr>
+        <tr>
+            <td align="center">
+                <input type="text" id="no_scan_name">
+            </td>
+        </tr>
+        <tr>
+            <td align="center">Travelling from airport:</td>
+        </tr>
+        <tr>
+            <td align="center">
+                <select id="no_scan_from">
+                    <option value="BOG">BOG</option>
+                    <option value="MDE">MDE</option>
+                    <option value="JFK">JFK</option>
+                    <option value="KBP">KBP</option>
+                    <option value="LGW">LGW</option>
+                    <option value="LWO">LWO</option>
+                    <option value="TSE">TSE</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">Travelling to airport:</td>
+        </tr>
+        <tr>
+            <td align="center">
+                <select id="no_scan_to">
+                    <option value="BOG">BOG</option>
+                    <option value="MDE">MDE</option>
+                    <option value="JFK">JFK</option>
+                    <option value="KBP">KBP</option>
+                    <option value="LGW">LGW</option>
+                    <option value="LWO">LWO</option>
+                    <option value="TSE">TSE</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <div class="nav_btn" onclick="ui.doNoScanContinue()">Continue</div>
+
+</div>
+
+<div id="ticket_info_tpl" class="tpl">
+    <div class="generic_head">Ticket Info</div>
+
+    <table>
+        <tr>
+            <td>Passenger:</td>
+            <td>{name}</td>
+        </tr>
+        <tr>
+            <td>PNR:</td>
+            <td>{pnr}</td>
+        </tr>
+        <tr>
+            <td>From:</td>
+            <td>{from}</td>
+        </tr>
+        <tr>
+            <td>To:</td>
+            <td>{to}</td>
+        </tr>
+        <tr>
+            <td>Airline:</td>
+            <td>{airline}</td>
+        </tr>
+        <tr>
+            <td>Flight #:</td>
+            <td>{flight_number}</td>
+        </tr>
+        <tr>
+            <td>Class:</td>
+            <td>{cabin_class}</td>
+        </tr>
+        <tr>
+            <td>Seat #:</td>
+            <td>{seat_number}</td>
+        </tr>
+    </table>
+    <div class="nav_btn" onclick="ui.showNewTrans()">Continue</div>
+
+</div>
+
+<div id="home_tpl" class="tpl">
+    <div id="home" style="height:100%">
+        <div class="generic_cell" onclick="ui.showStartDay()" id="btn_start_day" style="display:none">Start Day</div>
+        <div class="generic_cell" onclick="ui.showOnboardTrans()" id="btn_new_trans" style="display:none">New Transaction</div>
+        <div class="generic_cell" onclick="ui.showNewCreditNote()" id="btn_credit_note" style="display:none">Credit Note</div>
+        <div class="generic_cell" onclick="ui.showDayEnd()" id="btn_day_end" style="display:none">Close Day</div>
+    </div>
+</div>
+
+
+
+<div id="reports_tpl" class="tpl">
+
+    <div style="width:100%;height:100%;text-align:center;">
+        <table width="100%" cellpadding="0">
+            <tbody id="reports_list">
+                <tr>
+                    <td>
+                        <div class="generic_cell" onclick="reports.showShifts()">Shifts</div>
+                    </td>
+                </tr>
+<!--                 <tr>
+                    <td>
+                        <div class="generic_cell" onclick="ui.showTodayReport()">Today</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="generic_cell" onclick="ui.showDayReports()">Previous days</div>
+                    </td>
+                </tr> -->
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div id="today_report_tpl" class="tpl">
+
+    <div style="width:100%;min-height:100%;text-align:center;background-color:white;">
+        <table width="100%" cellpadding="5">
+            <tbody id="today_report_list">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div id="shifts_report_tpl" class="tpl">
+
+    <div style="width:100%;min-height:100%;text-align:center;background-color:white;">
+        <div class="generic_head"> Current Shift </div>
+        <table width="100%" cellpadding="5">
+            <tbody id="current_shift_list">
+            </tbody>
+        </table>
+        <div class="generic_head"> Shift History </div>
+        <table width="100%" cellpadding="5">
+            <tbody id="shifts_report_list">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="shift_trans_report_tpl" class="tpl">
+    <div style="width:100%;min-height:100%;text-align:center;background-color:white;" >
+        <h3> Transactions for Shift </h3>
+        <table width="100%" cellpadding="5">
+            <tbody id="shift_trans_list">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="day_reports_tpl" class="tpl">
+
+    <div style="width:100%;height:100%;text-align:center;">
+        <table width="100%" cellpadding="0">
+            <tbody id="day_reports_list">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="pending_transactions_tpl" class="tpl">
+
+    <div style="width:100%;height:100%;text-align:center;">
+        <table width="100%" cellpadding="5">
+            <tbody id="pending_transaction_list">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="day_report_tpl" class="tpl">
+    <div style="width:100%;height:100%;text-align:center;background-color:white;">
+        <h2>Sales Report</h2>
+        <table width="100%" cellpadding="5">
+            <tr>
+                <td align="right">Total sales:</td>
+                <td>{total_sales}</td>
+            </tr>
+            <tr>
+                <td align="right">Float:</td>
+                <td>{float_amount}</td>
+            </tr>
+            <tr>
+                <td align="right"><b>Total:</b></td>
+                <td><b>{total}</b></td>
+            </tr>
+        </table>
+        <table width="100%" cellpadding="5">
+            <tbody id="day_report_items">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="day_end_tpl" class="tpl">
+    <div style="width:100%;height:100%;text-align:center;background-color:white;">
+        <p>Enter float:</p>
+        <input type="number" placeholder="0.00" value="" id="float_input">
+        <br>
+        <div class="generic_cell" onclick="ui.startDay()">Start Day</div>
+
+    </div>
+
+</div>
+
+
+
+<div id="start_day_tpl" class="tpl">
+    <div style="width:100%;height:100%;text-align:center;background-color:white;">
+        <p>Enter float:</p>
+        <input type="number" placeholder="0.00" value="" id="float_input">
+        <br>
+        <div class="generic_cell" onclick="ui.startDay()">Start Day</div>
+
+    </div>
+
+</div>
+
+<div id="credit_note_receipt_tpl" class="tpl">
+    <center>
+    <div class="receipt">
+        <h2>{provider_name}</h2>
+        <h3>CREDIT NOTE</h3>
+        <br>
+        <table>
+            <tr>
+                <td><b>Date:</b></td>
+                <td>{date_time}</td>
+            </tr>
+            <tr>
+                <td><b>Ref:</b></td>
+                <td>{ref_num}</td>
+            </tr>
+        </table>
+        <br>
+        <br>
+        <table id="prod_list" cellpadding="10" cellspacing="0" style="width:100%">
+            <tr>
+                <td style="border-bottom:1px solid black">Qty</td>
+                <td style="border-bottom:1px solid black">Item</td>
+                <td style="border-bottom:1px solid black" align="right">Amount</td>
+            </tr>
+        </table>
+        <br>
+        <br>
+        <table cellpadding="10" cellspacing="0" style="border-top:1px solid black;border-bottom:1px solid black; width:100%;">
+            <tr>
+                <td>Subtotal</td>
+                <td align="right">{currency}&nbsp;{subtotal}</td>
+            </tr>
+            <tr>
+                <td>Sales tax</td>
+                <td align="right">{currency}&nbsp;{tax}</td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td align="right"><b>{currency}&nbsp;{total}</b></td>
+            </tr>
+        </table>
+        <hr>
+        <br>
+
+        <p>****Customer Receipt****</p>
+    </div>
+
+    </center>
+</div>
+
+<div id="get_customer_email_tpl" class="tpl">
+    <div style="background-color:white;min-height:100%;width:100%">
+        <center>
+        <p>Please enter customer detail</p>
+        <br>
+        <input type="text" value="" id="get_customer_name" placeholder="Customer name">
+        <input type="number" value="" id="get_customer_cell" placeholder="Cell number">
+        <input type="text" value="" id="get_customer_email" placeholder="Email">
+        <div class="nav_btn" onclick="ui.doEmailReceipt('{ref_num}')">Send</div>
+
+        </center>
+    </div>
+</div>
+
+<div id="get_customer_cell_tpl" class="tpl">
+    <div style="background-color:white;min-height:100%;width:100%">
+        <center>
+        <p>Please enter customer detail</p>
+        <br>
+        <input type="text" value="" id="get_customer_name" placeholder="Customer name">
+        <input type="number" value="" id="get_customer_cell" placeholder="Cell number">
+        <input type="text" value="" id="get_customer_email" placeholder="Email">
+        <div class="nav_btn" onclick="ui.doSMSReceipt('{ref_num}')">Send</div>
+
+        </center>
+    </div>
+</div>
+
+<div id="receipt_toolbar_tpl" class="tpl">
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="33%" align="center" onclick="ui.printSlip()">
+                <div class="toolbar_item button">
+                    Print
+                </div>
+            </td>
+            <td width="33%" align="center" onclick="ui.showGetSMSInfo('{ref_num}')">
+                <div class="toolbar_item button">
+                    SMS
+                </div>
+            </td>
+            <td width="33%" align="center" onclick="ui.showGetEmailInfo('{ref_num}')">
+                <div class="toolbar_item button">
+                    Email
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="receipt_tpl" class="tpl">
+    <center>
+
+    <div class="receipt" id="print_area">
+        <h2>{provider_name}</h2>
+        <table>
+            <tr>
+                <td><b style="font-size:18px">Date:</b></td>
+                <td style="font-size:14px">{date_time}</td>
+            </tr>
+            <tr>
+                <td><b style="font-size:18px">Ref:</b></td>
+                <td style="font-size:14px">{ref_num}</td>
+            </tr>
+            <tr>
+                <td><b style="font-size:18px">Payment:</b></td>
+                <td style="font-size:14px">{payment_type}</td>
+            </tr>
+
+        </table>
+        <table id="prod_list" cellpadding="10" cellspacing="0" style="width:100%">
+            <tr>
+                <td style="border-bottom:1px solid black">Qty</td>
+                <td style="border-bottom:1px solid black">Item</td>
+                <td style="border-bottom:1px solid black" align="right">Amount</td>
+            </tr>
+        </table>
+        <table cellpadding="10" cellspacing="0" style=" width:100%;">
+            <tr>
+                <td colspan="2">
+                    <hr>
+                </td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td align="right"><b>{currency}&nbsp;{total}</b></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <hr>
+                </td>
+            </tr>
+
+        </table>
+        <p>****Customer Receipt****</p>
+    </div>
+
+
+    </center>
+</div>
+
+<!--
+            <tr>
+                <td>Subtotal</td>
+                <td align="right">{currency}&nbsp;{subtotal}</td>
+            </tr>
+            <tr>
+                <td>Sales tax</td>
+                <td align="right">{currency}&nbsp;{tax}</td>
+            </tr>
+
+
+
+
+        <p>SALE</p>
+        <p>Card no. {card_no}</p>
+        <p>Card Type: {card_type}</p>
+        <p>Base Amount R: ____</p>
+        <p>Tip $ optional: ____</p>
+        <p>Total Amount (CUR): ____</p>
+        <br>
+        All authorization numbers must be entered
+        on the receipt (except on credit receipts)
+
+-->
+
+<div id="employer_selector_tpl" class="tpl">
+    <div class="generic_head">Select your store</div>
+    {empl_list}
+</div>
+
+
+<div id="employer_selector_cell_tpl" class="tpl">
+    <table class="generic_cell fat_cell" onclick="ui.selectEmployer({provider_id})">
+        <tr>
+            <td width="80"><img class="provider_thumb" style="background-image:url({thumb})"></td>
+            <td align="left">{provider_name}</td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="no_employer_tpl" class="tpl">
+    <table class="generic_cell">
+        <tr>
+            <td><div style="padding:20px">You are not currently set up as a POS user</div></td>
+        </tr>
+    </table>
+
+</div>
+<!--
+<div id="reports_tpl" class="tpl">
+    <div id="reports" style="height:100%">
+        <br>
+        <div class="nav_btn nav_btn_big" onclick="ui.showNewTrans()">New Transaction</div>
+    </div>
+
+</div>
+-->
+<div id="new_trans_tpl" class="tpl">
+    <div id="product_list" style="max-width:100%;width:100%;vertical-align:top;text-align:center"></div>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+
+
+<div id="scan_tpl" class="tpl">
+    <input type="text" style="opacity:0.2" id="scan_input">
+    <div id="current_item_list" style="max-width:100%;width:100%;vertical-align:top;text-align:center"></div>
+    <br>
+    <br>
+</div>
+
+
+
+<div id="trans_product_ground_tpl" class="tpl">
+    <div style="display:inline-block;margin:0px;padding:0px;margin-bottom:10px;width:100%;color:white;" class="product_cell">
+        <table width="100%">
+            <tr>
+                <td align="left">
+                    <table style="100%" height="120" style="">
+                        <tr>
+                            <td align="left">
+                                <div style="position:relative;width:80px;height:80px;background-image:url({thumbnail});background-position:center center;background-repeat:no-repeat;background-size:100px auto;">
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td align="right">
+                    <div style="font-size:18px;width:100%;text-align:center;padding:4px;;color:black;">
+                        {prod_name}
+                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="nav_btn_qty" style="text-align:center" onclick="ui.incQtyEditor('{prod_id}', {is_credit_note})">+</div>
+                            </td>
+                            <td>
+                               <input type="number" size="4" value="{qty}" id="qty_txt_{prod_id}" style="min-width:60px;width:60px!important;text-align:center" value="0" onchange="ui.setQtyEditor('{prod_id}', this.value, {is_credit_note})" class="qty_input">
+                            </td>
+                            <td>
+                                <div class="nav_btn_qty" style="text-align:center" onclick="ui.decQtyEditor('{prod_id}', {is_credit_note})">-</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="onboard_tpl" class="tpl">
+    <br>
+    <table width="100%">
+        <tr>
+            <td style="display:none" align="center" id="seat_configuration_type_label"><b>Plane Configuration:</b></td>
+            <td align="center"><b>Flight:</b></td>
+            <td style="display:none" align="center"><b>Seat:</b></td>
+            <td style="display:none" width="10%"></td>
+        </tr>
+        <tr>
+            <td style="display:none" align="center" id="seat_configuration_type_cell">
+                <select id="seat_configuration_type" onchange="ui.setConfigurationType(this.value)" style="display:none">
+            </td>
+            <td align="center">
+                <input type="text" style="min-width:100px;width:100px" id="flight_num" value="{flight_num}">
+            </td>
+            <td align="center" style="display:none">
+                <input type="text" style="min-width:60px;width:60px" id="seat_num" value="">
+            </td>
+        </tr>
+    </table>
+    <br>
+    <!-- <div class="nav_btn" onclick="ui.showOnboardCategorySelect()">Continue</div> -->
+    <table width="100%" class="airplane_seats"  width="100%" cellspacing="0" cellpadding="0" style="display:none">
+        <tbody id="seat_configuration">
+        </tbody>
+    </table>
+    <div class="nav_btn" onclick="ui.showOnboardCategorySelect()">Continue</div>
+</div>
+
+<div id="shift_summary_tpl" class="tpl">
+    <div id="shift_summary">
+        <h1>Summary</h1>
+        <table cellpadding="4">
+            <tr>
+                <td><b>Total Cash:</b></td>
+                <td align="right">$ {total_cash}</td>
+            </tr>
+            <tr>
+                <td><b>Total Credit Card:</b></td>
+                <td align="right">$ {total_card}</td>
+            </tr>
+            <tr>
+                <td><b>Total Failed:</b></td>
+                <td align="right">$ {total_failed}</td>
+            </tr>
+        </table>
+
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="nav_btn" onclick="ui.printShiftSummary(true)">Print</div>
+    <div class="nav_btn" onclick="ui.showAirHome(true)">Done</div>
+</div>
+
+<div id="shift_start_tpl" class="tpl">
+    <h4> Crew Select </h4>
+    <br>
+    <table width="100%">
+        <tr>
+            <td align="center"><b>Select Other Crew Member</b></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <select id="crew_select">
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div class="nav_btn" onclick="ui.startShift()">Start Shift</div>
+</div>
+
+<div id="waiting_for_card_tpl" class="tpl">
+    <br>
+    <br>
+    <br>
+    <div style="padding:30px">
+        <img src="images/card-icon.png" style="max-width:100px">
+        <br>
+        <br>
+        <br>
+        Please swipe, insert or tap credit card
+        <br>
+        <br>
+        <b id="card_reader_progress"></b>
+        <br>
+        <div id="card_wait_timeout_div" style="color:#29aded;font-size:44px;font-weight:bold"></div>
+    </div>
+</div>
+
+<div id="category_select_tpl" class="tpl">
+    <table width="100%">
+        <tr>
+            <td align="center">
+                <div class="big_button" onclick="ui.showOnboardTrans(12)">
+                    IN THE MORNING
+                    <br>
+                    <img src="images/in-the-morning.png">
+                </div>
+            </td>
+            <td align="center">
+                <div class="big_button" onclick="ui.showOnboardTrans(13)">
+                    IN THE AFTERNOON
+                    <br>
+                    <img src="images/in-the-afternoon.png">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" valign="bottom">
+                <div class="big_button" onclick="ui.showOnboardTrans(14)">
+                    SNACKS
+                    <br>
+                    <img src="images/snacks.png">
+                </div>
+            </td>
+            <td align="center">
+                <div class="big_button" onclick="ui.showOnboardTrans(15)">
+                    SOFT DRINKS
+                    <br>
+                    <img src="images/soft-drinks.png">
+                </div>
+            <td>
+        </tr>
+        <tr>
+            <td align="center">
+                <div class="big_button" onclick="ui.showOnboardTrans(16)">
+                    HOT DRINKS
+                    <br>
+                    <img src="images/hot-drinks.png">
+                </div>
+            </td>
+            <td align="center">
+                <div class="big_button" onclick="ui.showOnboardTrans(17)">
+                    ALCOHOL
+                    <br>
+                    <img src="images/alcohol.png">
+                </div>
+            <td>
+        </tr>
+    </table>
+
+</div>
+
+
+<div id="trans_product_onboard_tpl" class="tpl">
+    <div style="display:inline-block;margin:3px;width:95%;max-height:240px;border-radius:10px" class="product_cell">
+        <table width="100%">
+            <tr>
+                <td align="center" style="height:100px;width:50%">
+                    <img src="{thumbnail}" style="max-width:180px;max-height:100%;">
+                </td>
+                <td align="left" style="width:50%" >
+                    <div style="font-size:18px;width:100%;text-align:left;padding:4px;padding-right:10px;">
+                        <b>{prod_name}</b><br>
+                        {default_currency_symbol} {print_price}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="nav_btn_qty" style="text-align:center" onclick="ui.decQtyEditor('{prod_id}', {is_credit_note})">-</div>
+                            </td>
+                            <td>
+                               <input type="number" size="4" value="{qty}" id="qty_txt_{prod_id}" style="min-width:60px;width:60px!important;text-align:center" value="0" onchange="ui.setQtyEditor('{prod_id}', this.value, {is_credit_note})" class="qty_input">
+                            </td>
+                            <td>
+                                <div class="nav_btn_qty" style="text-align:center" onclick="ui.incQtyEditor('{prod_id}', {is_credit_note})">+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div id="qty_editor_tpl" class="tpl">
+    <div class="qty_editor">
+        <center>
+        <br>
+        <input type="hidden" value="{prod_id}" id="qty_prod_id">
+        <table style="background-color:white;padding:5px" class="qty_editor_tbl">
+            <tr>
+                <td style="font-size:14px">
+                    <img style="max-width:124px;max-height:124px" src="{thumbnail}">
+                    <br>
+                    {prod_name}
+                    <br>
+                    {default_currency_symbol} {print_price}
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="nav_btn_small" style="text-align:center" onclick="ui.incQtyEditor('{prod_id}')">+</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                               <input type="number" size="4" id="qty_txt" style="width:30px!important" value="0" onchange="ui.setQtyEditor('{prod_id}', this.value)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="nav_btn_small" style="text-align:center" onclick="ui.decQtyEditor('{prod_id}')">-</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+        </table>
+        <br>
+        <div class="nav_btn" onclick="appNav.popTemplate()">Done</div>
+        </center>
+    </div>
+
+</div>
+
+<div id="credit_note_payment_tpl" class="tpl">
+    <div class="payment_page">
+        <center>
+        <table style="font-size:24px" class="trans_info_tbl" cellpadding="10">
+            <tr>
+                <td>Due:</td>
+                <td align="right">{total_formatted}</td>
+            </tr>
+            <tr>
+                <td>Change:</td>
+                <td align="right"><div id="change_value">{change}</div></td>
+            </tr>
+        </table>
+
+        <br>
+
+        <div class="nav_btn nav_btn_big" onclick="ui.doCreditNote()">Credit</div>
+        <div class="nav_btn nav_btn_big" onclick="ui.showVoidCurrentTrans(true)">Void</div>
+        </center>
+        <br>
+    </div>
+    <br>
+</div>
+
+<!--
+        <div class="nav_btn nav_btn_big" onclick="ui.doHoldSale()">Hold</div>
+        <div class="nav_btn nav_btn_big" onclick="ui.doHoldSale(true)">Hold</div>
+            <tr>
+                <td>Tendered:</td>
+                <td align="right"><input type="number" value="0" style="max-width:80px;text-align:right" onchange="ui.updateTendered()" id="tendered_value"></td>
+            </tr>
+-->
+
+<div id="trans_payment_tpl" class="tpl">
+    <div class="payment_page" style="min-height:100%">
+        <center>
+        <table style="font-size:24px" class="trans_info_tbl" cellpadding="10">
+            <tr>
+                <td align="right">Due:</td>
+                <td align="right">{total_formatted}</td>
+            </tr>
+            <tr>
+                <td align="right">Tendered:</td>
+                <td align="right"><input type="number" value="" placeholder="0" style="min-width:80px;width:80px;text-align:right" onchange="ui.updateTendered()" id="tendered_value"></td>
+            </tr>
+            <tr>
+                <td align="right">Change:</td>
+                <td align="right"><div id="change_value">0.00</div></td>
+            </tr>
+        </table>
+
+        <br>
+
+        <div class="nav_btn nav_btn_big" onclick="ui.doSale('cash')">Cash</div>
+        <div class="nav_btn nav_btn_big" onclick="ui.doSale('cc')">Credit Card</div>
+        <div class="nav_btn nav_btn_big" onclick="ui.showVoidCurrentTrans()">Void</div>
+        </center>
+        <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    </div>
+</div>
+<!--
+        <div class="nav_btn nav_btn_big" onclick="ui.doSale('bm')">BlueMarket</div>
+-->
+<div id="bluemarket_payment_tpl" class="tpl">
+    <div style="width:100%;height:100%;background-color:white">
+        <h2>Customer scan:</h2>
+        <br>
+        <br>
+        <canvas id="bm_pay_code"></canvas>
+        <br>
+        <div class="nav_btn" onclick="ui.cancelMonitorPayment()">Cancel</div>
+    </div>
+</div>
+
+<div id="credit_note_toolbar_tpl" class="tpl">
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="left">
+                <div width="50%" style="padding-left:20px" class="toolbar_item button" id="qty_edit_total"></div>
+
+            </td>
+            <td align="center">
+                <div width="50%" class="toolbar_item button"  onclick="ui.showPaymentPage(true)">Pay</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="trans_toolbar_tpl" class="tpl">
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="left">
+                <div width="33%" style="padding-left:20px" class="toolbar_item button" id="qty_edit_total"></div>
+
+            </td>
+            <td align="center" valign="center">
+                <div width="33%" class="toolbar_item button"  onclick="ui.showPaymentPage()">
+                    <div style="border:2px solid white;border-radius:5px;padding:3px;margin-top:10px;line-height:26px;width:100px">Pay</div>
+                </div>
+            </td>
+            <td align="center" valign="center">
+                <div width="33%" class="toolbar_item button"  onclick="appNav.popTemplate();ui.showOnboardCategorySelect()">
+                    <div style="border:2px solid white;border-radius:5px;padding:3px;margin-top:10px;line-height:26px;width:100px">Continue</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="shift_toolbar_tpl" class="tpl">
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="left">
+                <!-- <div width="33%" style="padding-left:20px" class="toolbar_item button" id="qty_edit_total"></div> -->
+                <!-- Shift total here? -->
+            </td>
+            <td align="center" valign="center">
+                <div width="33%" class="toolbar_item button"  onclick="ui.showEndShift()">
+                    <div style="border:2px solid white;border-radius:5px;padding:3px;margin-top:10px;line-height:26px;width:100px">End Shift</div>
+                </div>
+            </td>
+            <td align="center" valign="center">
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="update_screen_tpl" class="tpl">
+    <br/>
+    <div>
+        Current Version: <b id='build_version'></b>
+    </div>
+    <br/>
+    <div id='update_info'>
+        Update Version: <b id='update_version'></b>
+    </div>
+    <br/>
+    <div id='update_message'>
+    </div>
+    <br/>
+    <div class="nav_btn button" onclick="ui.triggerUpdateDownload()" id='download_btn'>
+        Update Now
+    </div>
+    <br/>
+    <div class="nav_btn button" onclick="appNav.goBack()" id='update_back_btn'>
+        Back
+    </div>
+</div>
+
+
+<div id="login_win_tpl" class="tpl">
+    <div id="login_win">
+        <select id="country_code" onchange="session.setCountry(this.value)" style="display:none">
+            <option value="">Select your country</option>
+            <option value="gb">United Kingdom</option>
+            <option value="za" selected>South Africa</option>
+            <option value="rs">Serbia</option>
+            <option value="dev">Development</option>
+        </select>
+
+        <div>
+            <!-- <input type="number" id="device_num_txt" value="" placeholder="Your Employee Number" onchange="session.updateDeviceNum(this.value)"> -->
+            <input type="text" id="device_num_txt" value="" placeholder="Username" onchange="session.updateDeviceNum(this.value)"><br>
+            <input type="password" id="password" value="" placeholder="Password">
+        </div>
+        <div id="session_message" style="color:white">&nbsp; </div>
+        <div class="nav_btn button" onclick="session.validatePIN()">
+            Sign in
+        </div>
+        <br>
+    </div>
+</div>
+
+<div id="dialog_tpl" class="tpl">
+    <div id="dialog_div">
+        <div class="top_bar">
+            <div class="logo"></div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <p>{dialog_text}</p>
+        <br>
+        <br>
+        <br>
+        <div class="nav_btn hidden" id="dialog_ok_click">
+            OK
+        </div>
+        <div class="nav_btn hidden" id="dialog_cancel_click">
+            Cancel
+        </div>
+        <div class="nav_btn hidden" id="dialog_back_click">
+            Back
+        </div>
+    </div>
+</div>
+
+
+
+<div id="settings_div" class="overthrow">
+    <div style="text-align:center;background-color:white;">
+        <img src="images/aviapay-logo.png" style="max-height:60px;padding:10px;max-width:80%">
+    </div>
+
+
+    <div class="settings_head">
+        Data
+    </div>
+
+    <table class="settings_cell button" onclick="ui.refreshData()">
+        <tr>
+            <td>
+                Refresh data
+            </td>
+        </tr>
+    </table>
+
+    <table class="settings_cell button" onclick="ui.showUpdateScreen()">
+        <tr>
+            <td>
+                Check for update
+            </td>
+        </tr>
+    </table>
+
+    <div class="settings_head">
+                Session
+    </div>
+    <table class="settings_cell button" onclick="session.showLogin();ui.showSettings()">
+        <tr>
+            <td>
+                Sign out
+            </td>
+        </tr>
+    </table>
+
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+
+
+
+<div id="loading_tpl" class="tpl">
+    <div id="loading_div">
+        <div class="top_bar">
+            <div class="logo"></div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <img src="images/loading_blue.gif">
+        <br>
+        <br>
+        {message}
+    </div>
+</div>
+
+<iframe src="about:blank" style="display:none" id="print_frame"></iframe>
+</body>
+</html>
